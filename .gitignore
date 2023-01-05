@@ -97,7 +97,7 @@ ENV/
 .vscode/
 
 # Temp folder
-# Journals/TEMP/
+Journals/TEMP/
 
 # Weatherfile dats
 Journals/WeatherFileDats/
