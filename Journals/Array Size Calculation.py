@@ -12,7 +12,7 @@ import numpy as np
 # In[2]:
 
 
-SystemCapacity = 340 #kW, for solar
+SystemCapacity = 354 #kW, for solar
 panel_nameplate = .380 # kW
 nSections = 4
 
@@ -29,7 +29,7 @@ xgap = 1 # module-to-module space along the row axis.
 # In[3]:
 
 
-nPanels = np.round(SystemCapacity/panel_nameplate/4)*4  # 4 sections (NSEW), that's why dividing and rounding so it is a number dividable by 4. 
+nPanels = np.round(SystemCapacity/panel_nameplate/nSections)*nSections  # 4 sections (NSEW), that's why dividing and rounding so it is a number dividable by 4. 
 sectionnPanels = nPanels/nSections
 
 print("Panels in Field", int(nPanels))
@@ -46,8 +46,8 @@ print("nMods has to be ~", squareness, "x nRows for 'squareness'")
 # In[5]:
 
 
-nMods = int(224/squareness/2)
-nRows = int(sectionnPanels/nMods)
+nMods = int(np.ceil(sectionnPanels/squareness/2))
+nRows = int(np.ceil(sectionnPanels/nMods))
 print("nMods", nMods, "nRows", nRows)
 
 
@@ -68,12 +68,45 @@ print("Corrected numbers: \n\t", sectionnPanelsCorrected, " per Section\n",
 
 CO = 20          # Section Offset space. giving enough space for cars to go through, inverter systems etc.
 
+print("Section Size: ", nMods + (nMods-1) * xgap , " x ", (nRows-1)*pitch, " m ")
 print("Mega Array Side: ", nMods + (nMods-1) * xgap + CO + (nRows-1)*pitch,  "m")
+
+
+# # Considering racking bays of 5-7 modules
+
+# In[8]:
+
+
+modulesInBay = 6
+baygap = 2 # m
+
+
+# In[9]:
+
+
+nBays = int(np.ceil(nMods/6))
+nModsBayCorrected = nBays*modulesInBay
+
+sectionnPanelsBayCorrected = int(nModsBayCorrected*nRows) # Correcting for rounding
+nPanelsBayCorrected = int(sectionnPanelsBayCorrected*4)
+SystemCapacityBayCorrected = nPanelsBayCorrected*panel_nameplate
+ 
+print("Corrected numbers: \n\t", sectionnPanelsBayCorrected, " modules per Section\n",
+      "\t", nBays, " bays of ", nModsBayCorrected, " modules each in the row,", nRows, " rows \n",
+      "\t", nPanelsBayCorrected, "for the whole System\n",
+      "\t", SystemCapacityBayCorrected, " kW System Capcaity")
+
+
+# In[10]:
+
+
+print("Section Size per Side: ", nMods + ((nMods/modulesInBay) - 1) * baygap , " x ", (nRows-1)*pitch, " m ")
+print("Mega Array Side: ", nMods + ((nMods/modulesInBay) - 1) * baygap + CO + (nRows-1)*pitch,  "m")
 
 
 # ## Imaging
 
-# In[8]:
+# In[ ]:
 
 
 import pandas as pd
@@ -87,7 +120,7 @@ if not os.path.exists(testfolder):
     os.makedirs(testfolder)
 
 
-# In[9]:
+# In[ ]:
 
 
 rawfile = r'..\..\IOFiles\SouthPole_2021_WeatherFile.csv'
@@ -96,21 +129,21 @@ demo.setGround(0.7)
 metdata = demo.readWeatherFile(rawfile, source='SAM') 
 
 
-# In[10]:
+# In[ ]:
 
 
 # For sanity check, we are creating the same module but with different names for each orientation.
 mymodule = demo.makeModule(name='module',y=y,x=x, xgap=xgap)
 
 
-# In[11]:
+# In[ ]:
 
 
 timestamp = metdata.datetime.index(pd.to_datetime('2021-12-24 13:0:0 -0'))
 demo.gendaylit(timestamp) 
 
 
-# In[12]:
+# In[ ]:
 
 
 clearance_height = 0.5
@@ -128,7 +161,7 @@ for rr in range(0, nSections):
     sceneObjDict['sceneObj'+str(rr)] = demo.makeScene(mymodule, sceneDict)  
 
 
-# In[13]:
+# In[ ]:
 
 
 octfile = demo.makeOct() 
