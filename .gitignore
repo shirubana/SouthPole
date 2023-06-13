@@ -98,6 +98,4 @@ ENV/
 
 # Temp folder
 Journals/TEMP/
-
-# Weatherfile dats
-Journals/WeatherFileDats/
+Cumulative_Exploration/TEMP/

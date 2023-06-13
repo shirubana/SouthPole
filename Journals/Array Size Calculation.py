@@ -174,3 +174,33 @@ get_ipython().system('rvu -vf views\\front.vp -e .01 -pe 0.3 -vp 5 -50 50 -vd 0 
 
 
 # ![image.png](attachment:image.png)
+
+# In[1]:
+
+
+# GIFF Sanity Check
+
+
+# In[4]:
+
+
+panel_nameplate = .380 # kW
+modulesInBay = 6
+baygap = 2 # m
+bays = 5
+nrows = 8
+
+bays * nrows * modulesInBay * panel_nameplate * 4
+
+
+# In[3]:
+
+
+panel_nameplate = .380 # kW
+modulesInBay = 6
+baygap = 2 # m
+bays = 8
+nrows = 8
+
+bays * nrows * modulesInBay * panel_nameplate * 4
+
